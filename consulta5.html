@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cálculo de Importe de Examen (JS)</title>
+    <style>
+        /* Estilos básicos para que se vea decente sin un archivo CSS externo */
+        body { font-family: sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; }
+        h1 { text-align: center; color: #333; }
+        form label { display: block; margin-top: 15px; font-weight: bold; }
+        form select, form input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        form button[type="submit"] { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; width: 100%; font-size: 16px; }
+        form button[type="submit"]:hover { background-color: #0056b3; }
+        .resultado { border: 1px solid #ddd; padding: 15px; margin-top: 20px; border-radius: 4px; background-color: #e9ecef; }
+        .resultado p { margin: 5px 0; }
+        .error { color: red; text-align: center; font-weight: bold; margin-bottom: 15px; }
+        .base { text-align: center; color: #6c757d; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cálculo de Derecho de Examen</h1>
+
+        <p class="base">Importe Base del Examen: $285.00</p>
+        
+        <p id="error-message" class="error" style="display: none;"></p>
+
+        <form id="examenForm">
+            <label for="nombre">Nombre del Postulante:</label>
+            <input type="text" name="nombre" id="nombre" required placeholder="Ingrese el nombre" />
+
+            <label for="procedencia">Procedencia del Colegio:</label>
+            <select name="procedencia" id="procedencia" required>
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="NACIONAL">Colegio NACIONAL (10% Desc.)</option>
+                <option value="PARTICULAR">Colegio PARTICULAR (3% Desc.)</option>
+            </select>
+
+            <button type="submit">Calcular Importe a Pagar</button>
+        </form>
+
+        <div id="resultado" class="resultado" style="display: none;">
+            </div>
+
+    </div>
+
+    <script>
+        document.getElementById('examenForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío del formulario al servidor
+
+            // Constante que antes estaba en PHP
+            const IMPORTE_BASE = 285.00;
+
+            // Obtener elementos del DOM
+            const nombreInput = document.getElementById('nombre');
+            const procedenciaInput = document.getElementById('procedencia');
+            const errorMessage = document.getElementById('error-message');
+            const resultadoDiv = document.getElementById('resultado');
+
+            // Obtener valores
+            const nombre = nombreInput.value.trim();
+            const procedencia = procedenciaInput.value.trim();
+            let error = '';
+            let descuentoPorcentaje = 0.0;
+            
+            // Función auxiliar para formatear a 2 decimales
+            const formatCurrency = (amount) => amount.toFixed(2);
+
+            // 1. Validación (Lógica que antes era PHP)
+            if (!nombre || !procedencia) {
+                error = "Por favor ingrese el nombre y seleccione la procedencia del colegio.";
+            } else {
+                // 2. Lógica de cálculo del descuento (Switch de PHP convertido a JS)
+                switch (procedencia) {
+                    case 'NACIONAL':
+                        descuentoPorcentaje = 0.10; // 10%
+                        break;
+                    case 'PARTICULAR':
+                        descuentoPorcentaje = 0.03; // 3%
+                        break;
+                    default:
+                        error = "Procedencia de colegio inválida.";
+                        descuentoPorcentaje = 0.0;
+                }
+
+                if (!error) {
+                    // 3. Cálculos finales
+                    const descuentoMonto = IMPORTE_BASE * descuentoPorcentaje;
+                    const importeFinal = IMPORTE_BASE - descuentoMonto;
+
+                    // 4. Mostrar Resultados (Reemplaza el if final de PHP)
+                    resultadoDiv.innerHTML = `
+                        <p><strong>Postulante:</strong> ${nombre}</p>
+                        <p><strong>Procedencia:</strong> ${procedencia}</p>
+                        <p><strong>Importe Base:</strong> $${formatCurrency(IMPORTE_BASE)}</p>
+                        <p><strong>% de Descuento:</strong> ${descuentoPorcentaje * 100}%</p>
+                        <p><strong>Monto del Descuento:</strong> $${formatCurrency(descuentoMonto)}</p>
+                        <hr>
+                        <p><strong>IMPORTE FINAL A PAGAR:</strong> 💲 **${formatCurrency(importeFinal)}**</p>
+                    `;
+                    resultadoDiv.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                }
+            }
+
+            // 5. Manejo de errores (Reemplaza el if de error de PHP)
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                resultadoDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

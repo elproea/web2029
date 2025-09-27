@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Promedio Final del Alumno (JS)</title>
+    <link rel="stylesheet" href="consulta3.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Promedio Final</h1>
+
+        <p id="error-message" class="error" style="display: none;"></p>
+
+        <form id="promedioForm">
+            <label for="nombre">Nombre del Alumno:</label>
+            <input type="text" name="nombre" id="nombre" required placeholder="Ingrese el nombre" />
+
+            <label for="genero">Género:</label>
+            <select name="genero" id="genero" required>
+                <option value="" disabled selected>Seleccione género</option>
+                <option value="MASCULINO">MASCULINO (+3 pts)</option>
+                <option value="FEMENINO">FEMENINO (+5 pts)</option>
+            </select>
+            
+            <label for="n1">Nota 1:</label>
+            <input type="number" step="0.01" name="n1" id="n1" required min="0" />
+            
+            <label for="n2">Nota 2:</label>
+            <input type="number" step="0.01" name="n2" id="n2" required min="0" />
+            
+            <label for="n3">Nota 3:</label>
+            <input type="number" step="0.01" name="n3" id="n3" required min="0" />
+            
+            <label for="n4">Nota 4:</label>
+            <input type="number" step="0.01" name="n4" id="n4" required min="0" />
+            
+            <button type="submit">Calcular Promedio</button>
+        </form>
+
+        <div id="resultado" class="resultado" style="display: none;">
+            </div>
+
+        <button onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
+
+    <script>
+        document.getElementById('promedioForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Detiene el envío del formulario al servidor
+
+            const nombreInput = document.getElementById('nombre');
+            const generoInput = document.getElementById('genero');
+            const notaInputs = [
+                document.getElementById('n1'),
+                document.getElementById('n2'),
+                document.getElementById('n3'),
+                document.getElementById('n4')
+            ];
+            
+            const errorMessage = document.getElementById('error-message');
+            const resultadoDiv = document.getElementById('resultado');
+
+            let error = '';
+            
+            // 1. Obtener y validar datos
+            const nombre = nombreInput.value.trim();
+            const genero = generoInput.value.toUpperCase().trim();
+            const notas = notaInputs.map(input => parseFloat(input.value));
+
+            const notasValidas = notas.every(n => !isNaN(n) && n >= 0);
+
+            if (!nombre) {
+                error = "El nombre del alumno es obligatorio.";
+            } else if (genero !== "MASCULINO" && genero !== "FEMENINO") {
+                error = "Por favor selecciona un género válido (MASCULINO o FEMENINO).";
+            } else if (!notasValidas) {
+                error = "Todas las notas deben ser números válidos y mayores o iguales a cero.";
+            } else {
+                // 2. Calcular el Promedio Final (PF)
+                const sumaNotas = notas.reduce((acc, curr) => acc + curr, 0);
+                const pf = sumaNotas / 4;
+                
+                // 3. Aplicar Aumento por Género y calcular Nuevo Promedio (NP)
+                let aumento = 0;
+                if (genero === "MASCULINO") {
+                    aumento = 3;
+                } else if (genero === "FEMENINO") {
+                    aumento = 5;
+                }
+                
+                const np = pf + aumento;
+
+                // 4. Mostrar Resultados
+                resultadoDiv.innerHTML = `
+                    <p><strong>Alumno:</strong> ${nombre}</p>
+                    <p><strong>Género:</strong> ${genero}</p>
+                    <p><strong>Promedio Final (PF):</strong> ${pf.toFixed(2)}</p>
+                    <p><strong>Nuevo Promedio (NP) con Aumento de ${aumento} pts:</strong> ${np.toFixed(2)}</p>
+                `;
+                resultadoDiv.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+
+            // 5. Mostrar Error si existe
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                resultadoDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Sueldo (JS)</title>
+    <link rel="stylesheet" href="consulta4.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Sueldo del Trabajador</h1>
+
+        <p id="error-message" class="error" style="display: none;"></p>
+
+        <form id="sueldoForm">
+            <label for="nombre">Nombre del Trabajador:</label>
+            <input type="text" name="nombre" id="nombre" required placeholder="Ingrese el nombre" />
+
+            <label for="horas">Horas Trabajadas:</label>
+            <input type="number" name="horas" id="horas" step="0.01" required min="0" placeholder="Ej: 160" />
+
+            <label for="pago">Pago por Hora:</label>
+            <input type="number" name="pago" id="pago" step="0.01" required min="0" placeholder="Ej: 15.50" />
+
+            <button type="submit">Calcular Sueldo</button>
+        </form>
+
+        <div id="resultado" class="resultado" style="display: none;">
+            </div>
+
+        <button onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
+
+    <script>
+        document.getElementById('sueldoForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que el formulario se envíe al servidor (lo que haría PHP)
+
+            // Obtener elementos del DOM
+            const nombreInput = document.getElementById('nombre');
+            const horasInput = document.getElementById('horas');
+            const pagoInput = document.getElementById('pago');
+            const errorMessage = document.getElementById('error-message');
+            const resultadoDiv = document.getElementById('resultado');
+
+            // Obtener valores
+            const nombre = nombreInput.value.trim();
+            const horas = parseFloat(horasInput.value);
+            const pago = parseFloat(pagoInput.value);
+            let error = '';
+
+            // 1. Validación (Lógica que antes era PHP)
+            if (!nombre) {
+                error = "El nombre del trabajador es obligatorio.";
+            } else if (isNaN(horas) || horas < 0 || isNaN(pago) || pago < 0) {
+                error = "Por favor ingrese valores numéricos válidos (mayores o iguales a 0) para Horas y Pago.";
+            } else {
+                // 2. Cálculo del Sueldo Bruto (SB)
+                const sb = horas * pago;
+                let rete = 0;
+
+                // 3. Cálculo de la Retención (RETE)
+                // Si el sueldo bruto es mayor a 1500, se aplica 10% de retención
+                if (sb > 1500) {
+                    rete = sb * 0.10;
+                }
+
+                // 4. Cálculo del Sueldo Neto (SN)
+                const sn = sb - rete;
+
+                // Función auxiliar para formatear a 2 decimales
+                const formatCurrency = (amount) => amount.toFixed(2);
+
+                // 5. Mostrar Resultados (Reemplaza el if/else final de PHP)
+                resultadoDiv.innerHTML = `
+                    <p><strong>Trabajador:</strong> ${nombre}</p>
+                    <p><strong>Horas trabajadas:</strong> ${horas.toFixed(2)}</p>
+                    <p><strong>Pago por hora:</strong> $${formatCurrency(pago)}</p>
+                    <p><strong>Sueldo Bruto (SB):</strong> $${formatCurrency(sb)}</p>
+                    <p><strong>Retención (RETE):</strong> $${formatCurrency(rete)}</p>
+                    <p><strong>Sueldo Neto (SN):</strong> $${formatCurrency(sn)}</p>
+                `;
+                resultadoDiv.style.display = 'block';
+                errorMessage.style.display = 'none';
+
+                // Mantener los valores en el formulario (similar a PHP)
+                horasInput.value = horas;
+                pagoInput.value = pago;
+            }
+
+            // 6. Manejo de errores
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                resultadoDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

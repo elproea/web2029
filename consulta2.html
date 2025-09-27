@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consulta de Costo de Llamada (JS)</title>
+    <link rel="stylesheet" href="consulta2.css" />
+    </head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Llamadas Internacionales</h1>
+
+        <p id="error-message" class="error" style="display: none;"></p>
+
+        <form id="llamadaForm" novalidate>
+            <label for="clave">Clave de Zona:</label>
+            <select id="clave" name="clave" required>
+                <option value="" disabled selected>Seleccione una clave</option>
+                </select>
+
+            <label for="minutos">Minutos Hablados:</label>
+            <input
+                type="number"
+                id="minutos"
+                name="minutos"
+                step="0.01"
+                min="0"
+                required
+                placeholder="Ingrese la cantidad de minutos"
+            />
+
+            <button type="submit">Calcular Costo</button>
+        </form>
+
+        <div id="resultado" class="resultado" style="display: none;">
+            </div>
+
+        <button onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
+
+    <script>
+        // Los datos que antes estaban en el array PHP, ahora están en un objeto JavaScript
+        const zonas = {
+            "12": { zona: "América del Norte", precio: 2.1 },
+            "15": { zona: "América Central", precio: 2.6 },
+            "18": { zona: "América del Sur", precio: 4.5 },
+            "19": { zona: "Europa", precio: 3.6 },
+            "23": { zona: "Asia", precio: 6.5 },
+            "25": { zona: "África", precio: 7.8 },
+            "29": { zona: "Oceanía", precio: 3.9 }
+        };
+
+        const selectClave = document.getElementById('clave');
+        const llamadaForm = document.getElementById('llamadaForm');
+        const errorMessage = document.getElementById('error-message');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Función para cargar dinámicamente las opciones en el <select>
+        function cargarOpciones() {
+            // El PHP hacía un 'foreach' para llenar el select, aquí lo hace JS
+            for (const clave in zonas) {
+                const info = zonas[clave];
+                const option = document.createElement('option');
+                option.value = clave;
+                option.textContent = `${clave} - ${info.zona}`;
+                selectClave.appendChild(option);
+            }
+        }
+        cargarOpciones();
+
+        // Manejador del evento de envío del formulario
+        llamadaForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Detiene el envío al servidor (que antes manejaba PHP)
+
+            const minutosInput = document.getElementById('minutos');
+            const clave = selectClave.value;
+            const minutos = parseFloat(minutosInput.value);
+            let error = '';
+            let total = null;
+
+            // 1. Validación (Reemplaza la validación PHP)
+            if (!zonas.hasOwnProperty(clave)) {
+                error = "Clave no válida. Verifique la zona.";
+            } else if (isNaN(minutos) || minutos <= 0) {
+                error = "Ingrese un número válido de minutos (mayor a 0).";
+            } else {
+                // 2. Cálculo (Reemplaza el cálculo PHP)
+                const infoZona = zonas[clave];
+                const precio = infoZona.precio;
+                const zonaNombre = infoZona.zona;
+                total = precio * minutos;
+
+                // 3. Mostrar el resultado (Reemplaza el if/else final de PHP)
+                resultadoDiv.innerHTML = `
+                    <p class="result">Zona: <strong>${zonaNombre}</strong></p>
+                    <p class="result">Clave: ${clave}</p>
+                    <p class="result">Precio por minuto: $${precio.toFixed(2)}</p>
+                    <p class="result">Minutos hablados: ${minutos}</p>
+                    <hr />
+                    <p class="result"><strong>Costo total: $${total.toFixed(2)}</strong></p>
+                `;
+                resultadoDiv.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Opción para mantener el valor de minutos en el input (similar a PHP)
+                minutosInput.value = minutos;
+            }
+
+            // 4. Manejo de errores
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                resultadoDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consulta de pago (JS)</title>
+    <link rel="stylesheet" href="consulta1.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de Pago (Usando JavaScript)</h1>
+        
+        <p id="error-message" class="error" style="display: none;"></p>
+
+        <form id="pagoForm" novalidate>
+            <label for="sueldo">Sueldo Base:</label>
+            <input
+                type="number"
+                id="sueldo"
+                name="sueldo"
+                step="0.01"
+                min="0"
+                required
+                placeholder="Ingrese el sueldo base"
+            />
+
+            <label for="categoria">Categoría:</label>
+            <select id="categoria" name="categoria" required>
+                <option value="" disabled selected>Seleccione categoría</option>
+                <option value="1">Categoría 1 (30% de aumento)</option>
+                <option value="2">Categoría 2 (20% de aumento)</option>
+                <option value="3">Categoría 3 (15% de aumento)</option>
+                <option value="4">Categoría 4 (Sin aumento)</option>
+            </select>
+
+            <button type="submit">Calcular</button>
+        </form>
+
+        <div id="resultado" class="resultado" style="display: none;">
+            </div>
+
+        <button onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
+
+    <script>
+        document.getElementById('pagoForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Detiene el envío del formulario (lo que hacía PHP)
+
+            const sueldoInput = document.getElementById('sueldo');
+            const categoriaInput = document.getElementById('categoria');
+            const errorMessage = document.getElementById('error-message');
+            const resultadoDiv = document.getElementById('resultado');
+
+            const sueldo = parseFloat(sueldoInput.value);
+            const categoria = parseInt(categoriaInput.value);
+            let Nsueldo = null;
+            let error = '';
+
+            // 1. Validar inputs (Lógica que antes era PHP)
+            if (isNaN(sueldo) || sueldo <= 0) {
+                error = "Por favor ingresa un sueldo válido mayor a 0.";
+            } else if (![1, 2, 3, 4].includes(categoria)) {
+                error = "Selecciona una categoría válida.";
+            } else {
+                // 2. Cálculo del nuevo sueldo (Lógica que antes era PHP)
+                let factor = 1;
+                switch (categoria) {
+                    case 1:
+                        factor = 1.30;
+                        break;
+                    case 2:
+                        factor = 1.20;
+                        break;
+                    case 3:
+                        factor = 1.15;
+                        break;
+                    case 4:
+                        factor = 1; // Sin aumento
+                        break;
+                }
+                Nsueldo = sueldo * factor;
+            }
+
+            // 3. Mostrar resultados o error (Lógica que antes era PHP)
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                resultadoDiv.style.display = 'none';
+            } else {
+                errorMessage.style.display = 'none';
+                
+                resultadoDiv.innerHTML = `
+                    <p class="result">Sueldo ingresado: ${sueldo.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</p>
+                    <p class="result">Categoría seleccionada: ${categoria}</p>
+                    <hr />
+                    <p class="result"><strong>Nuevo sueldo calculado: ${Nsueldo.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></p>
+                `;
+                resultadoDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

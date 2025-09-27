@@ -1,0 +1,96 @@
+/* === BASE STYLES & RESET === */
+:root {
+    /* Define primary colors for easy changes across the site */
+    --color-primary: #007bff; /* A nice blue for accents */
+    --color-secondary: #6c757d; /* A gray for secondary text */
+    --color-background: #f8f9fa; /* Light background */
+    --color-text: #343a40; /* Dark text for readability */
+    --color-header-bg: #ffffff; /* White header background */
+
+    /* Typography scale */
+    --font-family-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-size-base: 1.1rem;
+}
+
+/* A simple reset for consistent box modeling */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    padding-top: 50px; /* Space for fixed/sticky headers if you add them later */
+}
+
+/* === HEADER STYLES === */
+header {
+    background-color: var(--color-header-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    padding: 20px 0; /* Vertical padding */
+    text-align: center;
+}
+
+header h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+/* === CONTENT & LAYOUT === */
+
+/* The 'padre' class for the main content container */
+.padre {
+    max-width: 800px; /* Max width for readability on large screens */
+    margin: 30px auto; /* Centers the container horizontally and adds vertical space */
+    padding: 20px;
+    background-color: #ffffff; /* White background for the content area */
+    border-radius: 8px; /* Slightly rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* More prominent shadow for content */
+}
+
+.padre p {
+    font-size: var(--font-size-base);
+    text-align: justify; /* Justify text for a formal look */
+    margin-bottom: 15px;
+}
+
+/* === UTILITY/REUSABLE CLASSES === */
+
+/* Class for buttons or call-to-action links (reusable) */
+.btn-primary {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* === RESPONSIVENESS (Mobile-First) === */
+
+/* Adjust font sizes and margins for smaller screens */
+@media (max-width: 768px) {
+    body {
+        font-size: 1rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .padre {
+        margin: 20px 15px; /* Less margin on the sides for small screens */
+        padding: 15px;
+        max-width: 100%;
+    }
+}
